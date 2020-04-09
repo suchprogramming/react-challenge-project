@@ -1,6 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+
 import "./nav.css";
+import { logoutUser } from '../../redux/actions/authActions';
+
+const mapStateToProps = (state) => {
+    return { auth: state.auth }
+}
 
 const Nav = (props) => {
     return (
@@ -15,13 +22,13 @@ const Nav = (props) => {
                     <label className="nav-label">View Orders</label>
                 </div>
             </Link>
-            <Link to={"/login"} className="nav-link">
+            <Link to={"/login"} className="nav-link" onClick={() => props.logoutUser()}>
                 <div className="nav-link-style">
-                    <label className="nav-label">Log Out</label>
+                    <label className="nav-label">Log Out {props.auth.email ?? ''}</label>
                 </div>
             </Link>
         </div>
     );
 }
 
-export default Nav;
+export default connect(mapStateToProps, {logoutUser})(Nav);
