@@ -49,7 +49,7 @@ class OrderForm extends Component {
     render() {
         return (
             <Template>
-                <div className="form-wrapper">
+                <div className="container-fluid">
                     <form>
                         <div className="form-group">
                             <label>I'd like to order...</label>

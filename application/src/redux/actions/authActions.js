@@ -1,5 +1,6 @@
 import { LOGIN, LOGOUT } from './types';
 import { SERVER_IP } from '../../private'
+import history from '../../history';
 
 const finishLogin = (email, token) => {
     return {
@@ -26,6 +27,7 @@ export const loginUser = (email, password) => {
         .then(response => {
             if (response.success) {
                 dispatch(finishLogin(response.email, response.token));
+                history.push('/view-orders');
             }
         })
     };
