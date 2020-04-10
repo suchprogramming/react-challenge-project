@@ -1,30 +1,37 @@
 import React, { Component } from 'react';
-import { Template } from '../../components';
-import { SERVER_IP } from '../../private';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+
 import './viewOrders.css';
+import { Template } from '../../components';
+import { getAllOrders, deleteOrder } from '../../redux/actions/orderActions';
+
+const mapStateToProps = (state) => {
+    return { orders: Object.values(state.orders) }
+};
 
 class ViewOrders extends Component {
-    state = {
-        orders: []
+    componentDidMount() {
+        this.props.getAllOrders();
     }
 
-    componentDidMount() {
-        fetch(`${SERVER_IP}/api/current-orders`)
-            .then(response => response.json())
-            .then(response => {
-                if(response.success) {
-                    this.setState({ orders: response.orders });
-                } else {
-                    console.log('Error getting orders');
-                }
-            });
-    }
+    deleteOrder(e, orderId) {
+        e.preventDefault();
+        this.props.deleteOrder(orderId);
+    };
 
     render() {
+        if (!this.props.orders) {
+            return (
+                <Template>
+                    <div>Loading...</div>
+                </Template>
+            );
+        }
         return (
             <Template>
                 <div className="container-fluid">
-                    {this.state.orders.map(order => {
+                    {this.props.orders.map(order => {
                         const createdDate = new Date(order.createdAt);
                         return (
                             <div className="row view-order-container" key={order._id}>
@@ -37,8 +44,10 @@ class ViewOrders extends Component {
                                     <p>Quantity: {order.quantity}</p>
                                  </div>
                                  <div className="col-md-4 view-order-right-col">
-                                     <button className="btn btn-success">Edit</button>
-                                     <button className="btn btn-danger">Delete</button>
+                                     <Link to={`/edit-order/${order._id}`}>
+                                        <button className="btn btn-success">Edit</button>
+                                     </Link>
+                                     <button onClick={(e) => this.deleteOrder(e, order._id)} className="btn btn-danger">Delete</button>
                                  </div>
                             </div>
                         );
@@ -49,4 +58,4 @@ class ViewOrders extends Component {
     }
 }
 
-export default ViewOrders;
+export default connect(mapStateToProps, { getAllOrders, deleteOrder })(ViewOrders);

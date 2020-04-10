@@ -51,7 +51,24 @@ router.post('/add-order', async (req, res) => {
   }
 });
 
-router.post('/edit-order', async (req, res) => {
+router.get('/edit-order/:id', async (req, res) =>{
+  try {
+    if (!req.params.id) {
+      res.status(400).json({ success: false, error: 'No id supplied'});
+      return;
+    }
+    const targetOrder = await Order.findOne({ _id: req.params.id });
+    if (!targetOrder) {
+      res.status(400).json({ success: false, error: 'No order exists with that id!' });
+      return;
+    }
+    res.status(200).json({success: true, order: targetOrder})
+  } catch (error) {
+    res.status(500).json({ success: false, error });
+  }
+});
+
+router.post('/update-order', async (req, res) => {
   // expects id
   try {
     if (!req.body.id) {
@@ -78,7 +95,8 @@ router.post('/edit-order', async (req, res) => {
       res.status(400).json({ success: false, error: 'Error in database while updating' });
       return;
     }
-    res.status(200).json({ success: true });
+    const updatedOrder = await Order.findOne({ _id: req.body.id });
+    res.status(200).json({ success: true, order: updatedOrder });
   } catch(error) {
     res.status(500).json({ success: false, error });
   }
@@ -105,7 +123,7 @@ router.post('/delete-order', async (req, res) => {
       return;
     }
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, id: req.body.id });
   } catch (error) {
     res.status(500).json({ success: false, error });
   }
